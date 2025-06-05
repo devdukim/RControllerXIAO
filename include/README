@@ -35,3 +35,25 @@ Read more about using header files in official GCC documentation:
 * Computed Includes
 
 https://gcc.gnu.org/onlinedocs/cpp/Header-Files.html
+
+├── include/
+│   ├── config.h              // 전역 설정 및 핀 정의
+│   ├── MotorController.h     // 모터 제어 클래스
+│   ├── EncoderManager.h      // 인코더 관리 클래스
+│   ├── BluetoothManager.h    // BLE 통신 관리 클래스
+│   ├── DisplayManager.h      // OLED 디스플레이 관리 클래스
+│   └── CommandProcessor.h    // 명령 처리 클래스
+├── src/
+│   ├── main.cpp              // 메인 함수
+│   ├── MotorController.cpp   // 모터 제어 구현
+│   ├── EncoderManager.cpp    // 인코더 관리 구현
+│   ├── BluetoothManager.cpp  // BLE 통신 구현
+│   ├── DisplayManager.cpp    // OLED 디스플레이 구현
+│   └── CommandProcessor.cpp  // 명령 처리 구현
+└── platformio.ini            // PlatformIO 설정
+
+MotorController: 모터 제어 전담
+EncoderManager: 인코더 데이터 관리 (싱글톤 패턴)
+BluetoothManager: BLE 통신 전담
+DisplayManager: OLED 디스플레이 관리
+CommandProcessor: 명령 해석 및 처리
