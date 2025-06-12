@@ -3,6 +3,7 @@
 
 #include <U8x8lib.h>
 #include "config.h"
+#include <Arduino.h>  // String 타입을 위해 추가
 
 // 전방 선언
 class MotorController;
@@ -14,7 +15,15 @@ private:
     MotorController* motorController;
     EncoderManager* encoderManager;
     
+    // 디스플레이 상태 관리
     bool showEncoderInfo;
+    bool isInitialized;
+    
+    // 통신 상태 추적
+    bool isSending;
+    String currentStatus;
+    String lastResponse;
+    unsigned long lastUpdateTime;
     
     // 디스플레이 설정
     static const int SCREEN_WIDTH = 128;
@@ -36,6 +45,10 @@ public:
     void updateReceivedMessage(const String& message);
     void updateMotorStatus();
     void updateStartupScreen();
+    
+    // 통신 상태 표시 메서드
+    void updateCommunicationStatus(bool isSending, const String& status = "");
+    void updateResponseStatus(const String& response);
     
     // 정보 표시 모드 토글
     void toggleEncoderInfo();
