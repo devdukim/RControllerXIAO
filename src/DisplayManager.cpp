@@ -1,6 +1,7 @@
 #include "DisplayManager.h"
 #include "MotorController.h"
 #include "EncoderManager.h"
+#include <Wire.h>
 
 DisplayManager::DisplayManager() 
     : display(nullptr), motorController(nullptr), encoderManager(nullptr), showEncoderInfo(false) {
@@ -13,16 +14,28 @@ DisplayManager::~DisplayManager() {
 }
 
 bool DisplayManager::initialize() {
+    Serial.println("Initializing Display Manager...");
+    
+    // OLED 디스플레이 초기화
     display = new U8X8_SSD1306_128X64_NONAME_HW_I2C(U8X8_PIN_NONE);
     if (!display) {
+        Serial.println("Failed to create display object!");
         return false;
     }
     
     display->begin();
-    display->setFlipMode(1);
+    display->setFlipMode(1);  // 화면 회전
     display->setFont(u8x8_font_chroma48medium8_r);
     
+    // 시작 화면 표시
     clearScreen();
+    display->setCursor(0, 0);
+    display->print("ESP32C3 4Motor");
+    display->setCursor(0, 1);
+    display->print("Mecanum Robot");
+    display->setCursor(0, 2);
+    display->print("Initializing...");
+    
     Serial.println("Display manager initialized successfully");
     return true;
 }
@@ -130,10 +143,6 @@ void DisplayManager::showMessageReceivedEffect() {
     digitalWrite(LED_PIN, HIGH);
     delay(100);
     digitalWrite(LED_PIN, LOW);
-    
-    // 연결 상태에 따라 LED 상태 복원
-    // 이 부분은 BluetoothManager의 연결 상태를 확인해야 하지만
-    // 의존성을 줄이기 위해 단순화
 }
 
 void DisplayManager::showStartupEffect() {
@@ -152,7 +161,7 @@ void DisplayManager::displayEncoderInfo() {
     display->clearLine(7);
     display->setCursor(0, 7);
     display->print("FL:");
-    display->print(encoderManager->getEncoderCount(MOTOR_FRONT_LEFT) / 100); // 표시용으로 100으로 나눔
+    display->print(encoderManager->getEncoderCount(MOTOR_FRONT_LEFT) / 100);
     display->print(" FR:");
     display->print(encoderManager->getEncoderCount(MOTOR_FRONT_RIGHT) / 100);
 }

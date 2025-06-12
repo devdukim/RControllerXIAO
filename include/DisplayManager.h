@@ -16,6 +16,12 @@ private:
     
     bool showEncoderInfo;
     
+    // 디스플레이 설정
+    static const int SCREEN_WIDTH = 128;
+    static const int SCREEN_HEIGHT = 64;
+    static const int OLED_RESET = -1;  // 리셋 핀 사용 안함
+    static const int SCREEN_ADDRESS = 0x3C;  // I2C 주소
+    
 public:
     DisplayManager();
     ~DisplayManager();
@@ -47,6 +53,7 @@ private:
     // 내부 헬퍼 함수
     void displayEncoderInfo();
     void displayMotorStatus();
+    void displayText(int x, int y, const String& text);
 };
 
 #endif // DISPLAY_MANAGER_H
