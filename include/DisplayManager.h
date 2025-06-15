@@ -31,6 +31,9 @@ private:
     static const int OLED_RESET = -1;  // 리셋 핀 사용 안함
     static const int SCREEN_ADDRESS = 0x3C;  // I2C 주소
     
+    // I2C 버스 리셋
+    void resetI2CBus();
+    
 public:
     DisplayManager();
     ~DisplayManager();

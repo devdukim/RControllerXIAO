@@ -95,8 +95,10 @@ void setup() {
     // 시작 화면 표시
     Serial.println("\nUpdating display...");
     displayManager->updateStartupScreen();
+    Serial.println("\nUpdating display(Effect)...");
     displayManager->showStartupEffect();
     
+    Serial.println("\nInitial status update...");
     // 초기 상태 업데이트
     displayManager->updateMotorStatus();
     

@@ -22,10 +22,9 @@ bool DisplayManager::initialize() {
     Serial.println("Initializing Display Manager...");
     
     // Wire 초기화 확인
-    if (!Wire.begin()) {
-        Serial.println("Failed to initialize I2C");
-        return false;
-    }
+    Wire.begin();
+    Wire.setClock(400000);  // 400kHz로 설정
+    delay(100);  // I2C 버스 안정화를 위한 지연
     
     // OLED 디스플레이 초기화
     if (display) {
@@ -38,9 +37,24 @@ bool DisplayManager::initialize() {
         return false;
     }
     
-    // 디스플레이 초기화 시도
-    if (!display->begin()) {
-        Serial.println("Failed to initialize display!");
+    // 디스플레이 초기화 시도 (최대 3번)
+    bool initSuccess = false;
+    for (int i = 0; i < 3 && !initSuccess; i++) {
+        Serial.print("Display initialization attempt ");
+        Serial.println(i + 1);
+        
+        if (display->begin()) {
+            initSuccess = true;
+            break;
+        }
+        
+        Serial.println("Display init failed, resetting I2C bus...");
+        resetI2CBus();
+        delay(100);
+    }
+    
+    if (!initSuccess) {
+        Serial.println("Failed to initialize display after 3 attempts!");
         delete display;
         display = nullptr;
         return false;
@@ -254,8 +268,14 @@ void DisplayManager::updateStartupScreen() {
         Serial.println("Display not ready for startup screen");
         return;
     }
-    
+
     clearScreen();
+    Serial.println("After clearScreen, checking display object...");
+    if (!display) {
+        Serial.println("ERROR: Display object became null after clearScreen!");
+        return;
+    }
+    
     display->setCursor(0, 0);
     display->print("ESP32C3 4Motor");
     display->setCursor(0, 1);
@@ -289,8 +309,46 @@ bool DisplayManager::isShowingEncoderInfo() const {
     return showEncoderInfo;
 }
 
+void DisplayManager::resetI2CBus() {
+    Serial.println("Resetting I2C bus...");
+    Wire.end();
+    delay(100);  // I2C 버스 안정화를 위한 지연
+    Wire.begin();
+    Wire.setClock(400000);  // 400kHz로 설정
+    delay(100);  // I2C 버스 안정화를 위한 지연
+    Serial.println("I2C bus reset completed");
+}
+
 void DisplayManager::clearScreen() {
+    if (!display) {
+        Serial.println("ERROR: Display object is null in clearScreen");
+        return;
+    }
+    
+    Serial.println("Attempting to clear display...");
+    
+    // I2C 버스 상태 확인
+    Wire.beginTransmission(0x3C);  // OLED 디스플레이의 I2C 주소
+    byte error = Wire.endTransmission();
+    
+    if (error != 0) {
+        Serial.print("I2C error before clear: ");
+        Serial.println(error);
+        Serial.println("Attempting to reset I2C bus...");
+        resetI2CBus();
+        
+        // 디스플레이 재초기화 시도
+        if (!display->begin()) {
+            Serial.println("Failed to reinitialize display after I2C reset!");
+            return;
+        }
+        display->setFlipMode(1);
+        display->setFont(u8x8_font_chroma48medium8_r);
+    }
+    
+    // 디스플레이 클리어 시도
     display->clear();
+    Serial.println("Display clear operation completed");
 }
 
 void DisplayManager::clearLine(int line) {
