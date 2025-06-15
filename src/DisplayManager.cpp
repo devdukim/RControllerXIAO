@@ -277,19 +277,21 @@ void DisplayManager::updateStartupScreen() {
     }
     
     display->setCursor(0, 0);
-    display->print("ESP32C3 4Motor");
+    display->print("ESP32C3 4Motor");  // 첫 번째 줄: 장비 이름만
     display->setCursor(0, 1);
-    display->print("Mecanum Robot");
+    display->print("Ver: ");
+    display->print(VersionInfo::getVersionString());  // 두 번째 줄: 버전 정보
     display->setCursor(0, 2);
+    display->print("Mecanum Robot");
+    display->setCursor(0, 3);
     display->print("BLE: Starting");
     
     // 초기 통신 상태 표시
-    display->clearLine(3);
-    display->setCursor(0, 3);
+    display->clearLine(4);
+    display->setCursor(0, 4);
     display->print("Status: Init");
     
     // 모터 상태 초기화
-    display->clearLine(5);
     display->clearLine(6);
     display->clearLine(7);
     

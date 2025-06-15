@@ -3,6 +3,7 @@
 
 #include <U8x8lib.h>
 #include "config.h"
+#include "version.h"  // 버전 정보 포함
 #include <Arduino.h>  // String 타입을 위해 추가
 
 // 전방 선언
